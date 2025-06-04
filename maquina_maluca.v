@@ -2,75 +2,67 @@ module maquina_maluca (
     input  wire clk,
     input  wire rst_n,
     input  wire start,
-    output wire [3:0] state
+    output wire  [3:0] state
 );
 
-    localparam IDLE                = 4'd1;
-    localparam LIGAR_MAQUINA       = 4'd2;
-    localparam VERIFICAR_AGUA      = 4'd3;
-    localparam ENCHER_RESERVATORIO = 4'd4;
-    localparam MOER_CAFE           = 4'd5;
-    localparam COLOCAR_NO_FILTRO   = 4'd6;
-    localparam PASSAR_AGITADOR     = 4'd7;
-    localparam TAMPEAR             = 4'd8;
-    localparam REALIZAR_EXTRACAO   = 4'd9;
+    localparam IDLE                = 4'd0; //alterado 4'd1
+    localparam LIGAR_MAQUINA       = 4'd1;
+    localparam VERIFICAR_AGUA      = 4'd2;
+    localparam ENCHER_RESERVATORIO = 4'd3;
+    localparam MOER_CAFE           = 4'd4;
+    localparam COLOCAR_NO_FILTRO   = 4'd5;
+    localparam PASSAR_AGITADOR     = 4'd6;
+    localparam TAMPEAR             = 4'd7;
+    localparam REALIZAR_EXTRACAO   = 4'd8; //alterado ordem de todos até aqui
 
     reg [3:0] current_state, next_state;
     reg agua_enchida;
 
+    assign state = current_state;
+
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            current_state <= 4'd7;
-            agua_enchida  <= 1'b1;
+            current_state <= IDLE;
+            agua_enchida  <= 1'b0; //alterado 1'b1
         end else begin
             current_state <= next_state;
-
             if (current_state == ENCHER_RESERVATORIO)
-                agua_enchida <= 1'b0;
+                agua_enchida <= 1'b1; //alterado 1'b0
         end
     end
 
-    // Lógica de próxima transição com erros
     always @(*) begin
         case (current_state)
-            IDLE: begin
-                next_state = IDLE;
-            end
+            IDLE:
+                next_state = start ? LIGAR_MAQUINA : IDLE;
 
-            LIGAR_MAQUINA: 
-                next_state = MOER_CAFE;
+            LIGAR_MAQUINA:
+                next_state = VERIFICAR_AGUA; //alterado moer cafe
 
-            VERIFICAR_AGUA: begin
-                if (agua_enchida)
-                    next_state = ENCHER_RESERVATORIO;
-                else
-                    next_state = MOER_CAFE;
-            end
+            VERIFICAR_AGUA:
+                next_state = (agua_enchida ? MOER_CAFE : ENCHER_RESERVATORIO);//dividido entre verificar moer e encher agua
 
-            ENCHER_RESERVATORIO: 
-                next_state = COLOCAR_NO_FILTRO;
+            ENCHER_RESERVATORIO:
+                next_state = VERIFICAR_AGUA; //alterado colocar no filtro
 
-            MOER_CAFE:         
-                next_state = MOER_CAFE;
+            MOER_CAFE:
+                next_state = COLOCAR_NO_FILTRO; //alterado moer cafe
 
-            COLOCAR_NO_FILTRO: 
-                next_state = REALIZAR_EXTRACAO;
+            COLOCAR_NO_FILTRO:
+                next_state = PASSAR_AGITADOR; //alterado realizar extração
 
-            PASSAR_AGITADOR:   
-                next_state = IDLE;
+            PASSAR_AGITADOR:
+                next_state = TAMPEAR; // alterado idle
 
-            TAMPEAR:           
-                next_state = VERIFICAR_AGUA;
+            TAMPEAR:
+                next_state = REALIZAR_EXTRACAO; //alterado verificar agua
 
-            REALIZAR_EXTRACAO: 
-                next_state = REALIZAR_EXTRACAO;
+            REALIZAR_EXTRACAO:
+                next_state = IDLE; //alterado realizar extração
 
-            default: 
-                next_state = MOER_CAFE;
+            default:
+                next_state = IDLE; // alterado moer
         endcase
     end
-
-
-    assign state = current_state;
 
 endmodule

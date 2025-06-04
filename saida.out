@@ -1,0 +1,34 @@
+VCD info: dumpfile saida_maquina.vcd opened for output.
+== Teste 1: Ciclo completo com reservatório vazio ==
+T1: ciclo=0 | state=2
+T1: ciclo=1 | state=3
+T1: ciclo=2 | state=2
+T1: ciclo=3 | state=4
+T1: ciclo=4 | state=5
+T1: ciclo=5 | state=6
+T1: ciclo=6 | state=7
+T1: ciclo=7 | state=8
+T1: ciclo=8 | state=0
+T1: ciclo=9 | state=0
+== Teste 2: Novo ciclo, agora com água pronta ==
+T2: ciclo=10 | state=2
+T2: ciclo=11 | state=4
+T2: ciclo=12 | state=5
+T2: ciclo=13 | state=6
+T2: ciclo=14 | state=7
+T2: ciclo=15 | state=8
+T2: ciclo=16 | state=0
+T2: ciclo=17 | state=0
+T2: ciclo=18 | state=0
+== Teste 3: Reset durante operação ==
+T3: ciclo=19 | state=1
+T3: ciclo=20 | state=2
+T3: ciclo=21 | state=3
+== Teste 4: Nunca inicia (start = 0) ==
+T4: ciclo=22 | state=2
+T4: ciclo=23 | state=4
+T4: ciclo=24 | state=5
+T4: ciclo=25 | state=6
+T4: ciclo=26 | state=7
+Testbench finalizado.
+tb.v:79: $finish called at 335000 (1ps)
